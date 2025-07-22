@@ -1,0 +1,149 @@
+  @tailwind base;
+  @tailwind components;
+  @tailwind utilities;
+  
+@layer base {
+  /**
+   * Tailwind CSS theme
+   * tailwind.config.ts expects the following color variables to be expressed as HSL values.
+   * A different format will require also updating the theme in tailwind.config.ts.
+  */
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 220 87% 6%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 87% 6%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 87% 6%;
+
+    --primary: 264 83% 57%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 240 18% 97%;
+    --secondary-foreground: 220 87% 6%;
+
+    --muted: 240 18% 97%;
+    --muted-foreground: 220 9% 46%;
+
+    --accent: 193 95% 68%;
+    --accent-foreground: 220 87% 6%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 18% 91%;
+    --input: 240 18% 91%;
+    --ring: 264 83% 57%;
+
+    --radius: 0.75rem;
+
+    /* Toolworld.ai black and multicolor theme */
+    --tw-primary: 262 83% 58%; /* Electric Purple */
+    --tw-secondary: 291 64% 42%; /* Deep Purple */
+    --tw-accent: 158 64% 52%; /* Electric Green */
+    --tw-neon: 60 100% 50%; /* Electric Yellow */
+    --tw-pink: 330 81% 60%; /* Electric Pink */
+    --tw-blue: 217 91% 60%; /* Electric Blue */
+    --tw-orange: 25 95% 53%; /* Electric Orange */
+    --tw-dark: 0 0% 0%; /* Pure Black */
+    --tw-light: 0 0% 100%;
+    --tw-gray: 0 0% 15%;
+    --tw-gradient-1: 262 83% 58%;
+    --tw-gradient-2: 291 64% 42%;
+    --tw-gradient-3: 158 64% 52%;
+    --tw-gradient-4: 217 91% 60%;
+    --tw-gradient-5: 330 81% 60%;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 220 87% 6%;
+    --foreground: 0 0% 98%;
+
+    --card: 220 54% 9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 220 54% 9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 193 95% 68%;
+    --primary-foreground: 220 87% 6%;
+
+    --secondary: 220 27% 18%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 220 27% 18%;
+    --muted-foreground: 220 9% 65%;
+
+    --accent: 264 83% 57%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 220 27% 18%;
+    --input: 220 27% 18%;
+    --ring: 193 95% 68%;
+
+    /* Toolworld.ai dark mode black and multicolor */
+    --tw-primary: 262 83% 68%;
+    --tw-secondary: 291 64% 52%;
+    --tw-accent: 158 64% 62%;
+    --tw-neon: 60 100% 60%;
+    --tw-pink: 330 81% 70%;
+    --tw-blue: 217 91% 70%;
+    --tw-orange: 25 95% 63%;
+    --tw-dark: 0 0% 98%;
+    --tw-light: 0 0% 8%;
+    --tw-gray: 0 0% 20%;
+    --tw-gradient-1: 262 83% 68%;
+    --tw-gradient-2: 291 64% 52%;
+    --tw-gradient-3: 158 64% 62%;
+    --tw-gradient-4: 217 91% 70%;
+    --tw-gradient-5: 330 81% 70%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Navbar 180-degree flip animation */
+.navbar-flip-container {
+  perspective: 1000px;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
