@@ -1,11 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Zap, ChevronDown } from "lucide-react";
-
+import { Menu, X, Zap, ChevronDown, User, LogOut } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+    const [showUserMenu, setShowUserMenu] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
+  const userMenuRef = useRef(null);
+
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setShowUserMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleServicesClick = () => {
     if (isAnimating) return;
@@ -134,19 +151,60 @@ const Navbar = () => {
               </div>
 
               {/* Auth Buttons */}
-              <div className="hidden lg:flex items-center space-x-4">
-                <Link
-                  to="/auth"
-                  className="text-tw-primary hover:text-tw-accent font-medium transition-colors duration-200"
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/auth?mode=signup"
-                  className="bg-gradient-to-r from-tw-primary via-tw-accent to-tw-pink text-white px-6 py-2 rounded-lg hover:shadow-lg hover:shadow-tw-primary/25 transition-all duration-200 transform hover:scale-105 font-medium"
-                >
-                  Sign Up
-                </Link>
+                <div className="hidden lg:flex items-center space-x-4">
+                {isAuthenticated ? (
+                  <div className="relative" ref={userMenuRef}>
+                    <button
+                      onClick={() => setShowUserMenu(!showUserMenu)}
+                      className="flex items-center gap-3 bg-tw-gray/80 border border-gray-600 rounded-lg px-4 py-2 hover:border-tw-primary transition-colors"
+                    >
+                      <span className="text-2xl">{user?.avatar}</span>
+                      <div className="text-left">
+                        <div className="text-white font-medium">{user?.name}</div>
+                        <div className="text-tw-primary text-xs">{user?.plan}</div>
+                      </div>
+                      <ChevronDown className="w-4 h-4 text-gray-400" />
+                    </button>
+
+                    {showUserMenu && (
+                      <div className="absolute top-full right-0 mt-2 w-48 bg-tw-gray border border-gray-600 rounded-lg py-2 z-50">
+                        <Link
+                          to="/dashboard"
+                          className="flex items-center gap-2 px-4 py-2 text-white hover:bg-tw-primary/20 transition-colors"
+                          onClick={() => setShowUserMenu(false)}
+                        >
+                          <User className="w-4 h-4" />
+                          Dashboard
+                        </Link>
+                        <button
+                          onClick={() => {
+                            logout();
+                            setShowUserMenu(false);
+                          }}
+                          className="flex items-center gap-2 px-4 py-2 text-red-400 hover:bg-red-500/20 transition-colors w-full text-left"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Logout
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    <Link
+                      to="/auth"
+                      className="text-tw-primary hover:text-tw-accent font-medium transition-colors duration-200"
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      to="/auth?mode=signup"
+                      className="bg-gradient-to-r from-tw-primary via-tw-accent to-tw-pink text-white px-6 py-2 rounded-lg hover:shadow-lg hover:shadow-tw-primary/25 transition-all duration-200 transform hover:scale-105 font-medium"
+                    >
+                      Sign Up
+                    </Link>
+                  </>
+                )}
               </div>
 
               {/* Mobile menu button */}
@@ -199,19 +257,60 @@ const Navbar = () => {
               </div>
 
               {/* Auth Buttons */}
-              <div className="hidden lg:flex items-center space-x-4">
-                <Link
-                  to="/auth"
-                  className="text-tw-blue hover:text-tw-accent font-medium transition-colors duration-200"
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/auth?mode=signup"
-                  className="bg-gradient-to-r from-tw-blue via-tw-neon to-tw-secondary text-white px-6 py-2 rounded-lg hover:shadow-lg hover:shadow-tw-blue/25 transition-all duration-200 transform hover:scale-105 font-medium"
-                >
-                  Sign Up
-                </Link>
+             <div className="hidden lg:flex items-center space-x-4">
+                {isAuthenticated ? (
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowUserMenu(!showUserMenu)}
+                      className="flex items-center gap-3 bg-tw-gray/80 border border-gray-600 rounded-lg px-4 py-2 hover:border-tw-blue transition-colors"
+                    >
+                      <span className="text-2xl">{user?.avatar}</span>
+                      <div className="text-left">
+                        <div className="text-white font-medium">{user?.name}</div>
+                        <div className="text-tw-blue text-xs">{user?.plan}</div>
+                      </div>
+                      <ChevronDown className="w-4 h-4 text-gray-400" />
+                    </button>
+
+                    {showUserMenu && (
+                      <div className="absolute top-full right-0 mt-2 w-48 bg-tw-gray border border-gray-600 rounded-lg py-2 z-50">
+                        <Link
+                          to="/dashboard"
+                          className="flex items-center gap-2 px-4 py-2 text-white hover:bg-tw-blue/20 transition-colors"
+                          onClick={() => setShowUserMenu(false)}
+                        >
+                          <User className="w-4 h-4" />
+                          Dashboard
+                        </Link>
+                        <button
+                          onClick={() => {
+                            logout();
+                            setShowUserMenu(false);
+                          }}
+                          className="flex items-center gap-2 px-4 py-2 text-red-400 hover:bg-red-500/20 transition-colors w-full text-left"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Logout
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    <Link
+                      to="/auth"
+                      className="text-tw-blue hover:text-tw-accent font-medium transition-colors duration-200"
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      to="/auth?mode=signup"
+                      className="bg-gradient-to-r from-tw-blue via-tw-neon to-tw-secondary text-white px-6 py-2 rounded-lg hover:shadow-lg hover:shadow-tw-blue/25 transition-all duration-200 transform hover:scale-105 font-medium"
+                    >
+                      Sign Up
+                    </Link>
+                  </>
+                )}
               </div>
 
               {/* Mobile menu button */}
@@ -284,21 +383,61 @@ const Navbar = () => {
                 Pricing
               </Link>
 
-              <div className="flex flex-col space-y-2 px-4 pt-4 border-t border-gray-800">
-                <Link
-                  to="/auth"
-                  className="text-tw-primary hover:text-tw-accent font-medium text-left"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/auth?mode=signup"
-                  className="bg-gradient-to-r from-tw-primary via-tw-accent to-tw-pink text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all duration-200 w-fit"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Sign Up
-                </Link>
+               <Link
+                to="/contact"
+                className="text-white hover:text-tw-neon transition-colors font-medium px-4 py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Contact
+              </Link>
+
+                <div className="flex flex-col space-y-2 px-4 pt-4 border-t border-gray-800">
+                {isAuthenticated ? (
+                  <>
+                    <div className="flex items-center gap-3 py-2 text-white">
+                      <span className="text-2xl">{user?.avatar}</span>
+                      <div>
+                        <div className="font-medium">{user?.name}</div>
+                        <div className="text-tw-primary text-sm">{user?.plan}</div>
+                      </div>
+                    </div>
+                    <Link
+                      to="/dashboard"
+                      className="flex items-center gap-2 text-white hover:text-tw-primary font-medium text-left py-2"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <User className="w-4 h-4" />
+                      Dashboard
+                    </Link>
+                    <button
+                      onClick={() => {
+                        logout();
+                        setIsMenuOpen(false);
+                      }}
+                      className="flex items-center gap-2 text-red-400 hover:text-red-300 font-medium text-left py-2"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      to="/auth"
+                      className="text-tw-primary hover:text-tw-accent font-medium text-left"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      to="/auth?mode=signup"
+                      className="bg-gradient-to-r from-tw-primary via-tw-accent to-tw-pink text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all duration-200 w-fit"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Sign Up
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>

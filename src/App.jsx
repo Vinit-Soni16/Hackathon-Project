@@ -20,6 +20,7 @@ import Pricing from "./pages/Pricing";
 import Chatbot from "./components/Chatbot";
 import ScrollToTop from "./components/ScrollToTop";
 import Contact from "./pages/Contact";
+import { AuthProvider } from "./context/AuthContext";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -27,6 +28,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <AuthProvider >
       <BrowserRouter>
       <ScrollToTop/>
         <Routes>
@@ -48,6 +50,7 @@ const App = () => (
         </Routes>
         <Chatbot />
       </BrowserRouter>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

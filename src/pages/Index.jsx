@@ -74,29 +74,31 @@ export default function Index() {
     },
   ];
 
-  const testimonials = [
+ const testimonials = [
     {
-      name: "Sarah Chen",
-      role: "CEO, TechStart",
+      name: "Vinit Kumar Soni",
+      role: "Founder & CEO, Toolworld.ai , Jaipur",
       content:
-        "Toolworld.ai revolutionized our workflow. We're 300% more productive!",
+       "Building Toolworld.ai started with solving my own problem — finding the right AI tools without wasting hours. Today, we’re helping thousands do the same. This platform is built for speed, scale, and creators like you.",
       rating: 5,
+      avatar: "👨‍💼",
       gradient: "from-tw-primary to-tw-accent",
     },
     {
-      name: "Marcus Rodriguez",
-      role: "Lead Developer, CodeCorp",
-      content:
-        "The AI tools here are game-changers. Development time cut in half.",
-      rating: 5,
+      name: "Rahul Gupta",
+      role: "Research Director, DeepLabs",
+      content:"Unmatched insights, powerful automation — Toolworld.ai helped us speed up data analysis and unlock deeper patterns we couldn't see before.",
+     rating: 5,
+      avatar: "👨‍💼",
       gradient: "from-tw-blue to-tw-pink",
     },
     {
-      name: "Dr. Emily Watson",
-      role: "Research Director",
-      content: "Unparalleled insights and automation. Exactly what we needed.",
+      name: "Dr. Anjali Verma",
+      role: "Lead Developer, CodeCorp",
+      content: "The AI tools on Toolworld.ai are absolute game-changers. We cut our development time in half, and the quality has skyrocketed.",
       rating: 5,
-      gradient: "from-tw-orange to-tw-accent",
+      avatar: "👩‍🔬",
+      gradient: "from-tw-accent to-tw-orange",
     },
   ];
 
@@ -292,18 +294,19 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="py-20 bg-tw-gray/30">
+       {/* Testimonials Section */}
+      <section className="py-20 bg-gradient-to-r from-tw-primary/10 to-tw-accent/10 border-t border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
               Loved by{" "}
-              <span className="bg-gradient-to-r from-tw-orange to-tw-pink bg-clip-text text-transparent">
-                Thousands
+              <span className="bg-gradient-to-r from-tw-primary to-tw-accent bg-clip-text text-transparent">
+                Our Community
               </span>
             </h2>
-            <p className="text-xl text-gray-300">
-              Join the community of innovators transforming their work with AI
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Real users sharing their experiences with Toolworld.ai - from students to professionals,
+              everyone finds value in our AI tools platform
             </p>
           </div>
 
@@ -311,29 +314,55 @@ export default function Index() {
             {testimonials.map((testimonial, index) => (
               <div
                 key={index}
-                className="bg-tw-gray/80 border border-gray-700 rounded-2xl p-6 hover:border-tw-primary/40 transition-all duration-300"
+                className="bg-tw-gray/60 backdrop-blur-xl border border-gray-700 rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-200 group"
               >
-                <div className="flex items-center gap-1 mb-4">
+                <div
+                  className={`w-16 h-16 bg-gradient-to-r ${testimonial.gradient} rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4`}
+                >
+                  {testimonial.avatar}
+                </div>
+
+                <div className="flex items-center justify-center gap-1 mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
                     <Star
                       key={i}
-                      className="w-5 h-5 text-yellow-400 fill-current"
+                      className="w-4 h-4 text-yellow-400 fill-current"
                     />
                   ))}
                 </div>
-                <p className="text-gray-300 mb-4 leading-relaxed">
+
+                <p className="text-gray-300 mb-4 leading-relaxed italic">
                   "{testimonial.content}"
                 </p>
+
                 <div>
-                  <p
-                    className={`font-semibold bg-gradient-to-r ${testimonial.gradient} bg-clip-text text-transparent`}
-                  >
+                  <h3 className="text-lg font-bold text-white mb-1 group-hover:text-tw-primary transition-colors">
                     {testimonial.name}
-                  </p>
-                  <p className="text-gray-400 text-sm">{testimonial.role}</p>
+                  </h3>
+                  <p className="text-tw-accent font-medium text-sm">{testimonial.role}</p>
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Community Stats */}
+          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div>
+              <div className="text-3xl font-bold text-tw-primary mb-2">1,200+</div>
+              <div className="text-gray-400">Active Users</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-tw-accent mb-2">50+</div>
+              <div className="text-gray-400">AI Tools Featured</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-tw-blue mb-2">25+</div>
+              <div className="text-gray-400">Video Tutorials</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-tw-pink mb-2">500+</div>
+              <div className="text-gray-400">Community Posts</div>
+            </div>
           </div>
         </div>
       </section>

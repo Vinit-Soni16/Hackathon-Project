@@ -2,10 +2,12 @@ import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { Eye, EyeOff, Github, Chrome, X } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 export default function Auth() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [isLogin, setIsLogin] = useState(searchParams.get("mode") !== "signup");
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -15,20 +17,17 @@ export default function Auth() {
     confirmPassword: "",
   });
 
-const handleSubmit = (e) => {
-  e.preventDefault();
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-    // Simulate login/signup success
-    localStorage.setItem("isLoggedIn", "true");
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        name: formData.name || "Alex Chen",
-        email: formData.email,
-        plan: "Pro",
-        avatar: "👨‍💻",
-      }),
-    );
+    // Use authentication context to login
+    login({
+      name: formData.name || "Vinit Kumar Soni",
+      email: formData.email,
+      plan: "Pro",
+      avatar: "👨‍💻",
+      memberSince: new Date().toISOString(),
+    });
 
     // Redirect to dashboard
     navigate("/dashboard");
@@ -36,31 +35,25 @@ const handleSubmit = (e) => {
 
   const handleGoogleAuth = () => {
     // Simulate Google OAuth
-    localStorage.setItem("isLoggedIn", "true");
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        name: "Alex Chen",
-        email: "alex@toolworld.ai",
-        plan: "Pro",
-        avatar: "👨‍💻",
-      }),
-    );
+    login({
+      name: "Vinit Kumar Soni",
+      email: "vinit@toolworld.ai",
+      plan: "Pro",
+      avatar: "👨‍💻",
+      memberSince: new Date().toISOString(),
+    });
     navigate("/dashboard");
   };
 
   const handleGithubAuth = () => {
     // Simulate GitHub OAuth
-    localStorage.setItem("isLoggedIn", "true");
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        name: "Alex Chen",
-        email: "alex@toolworld.ai",
-        plan: "Free",
-        avatar: "👨‍💻",
-      }),
-    );
+    login({
+      name: "Vinit Kumar Soni",
+      email: "vinit@toolworld.ai",
+      plan: "Free",
+      avatar: "👨‍💻",
+      memberSince: new Date().toISOString(),
+    });
     navigate("/dashboard");
   };
 
@@ -72,16 +65,16 @@ const handleSubmit = (e) => {
         <div className="max-w-md mx-auto px-4">
           {/* Auth Container */}
           <div className="bg-tw-gray/60 border border-gray-700 rounded-2xl overflow-hidden backdrop-blur-xl">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-tw-primary via-tw-accent to-tw-pink p-6 text-center">
-               <button
+           <button
   onClick={() => navigate(-1)}
  className="mb-6 flex items-center space-x-2 text-white hover:text-white transition-colors "
             >
  
   
               <X className=" w-5 h-5 text-white" />
-</button>
+</button> 
+            {/* Header */}
+            <div className="bg-gradient-to-r from-tw-primary via-tw-accent to-tw-pink p-6 text-center">
               <h1 className="text-3xl font-bold text-white mb-2">
                 {isLogin ? "Welcome Back" : "Join Toolworld.ai"}
               </h1>
