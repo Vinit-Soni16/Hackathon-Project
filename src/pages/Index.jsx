@@ -415,9 +415,9 @@ export default function Index() {
       </section>
 
       {/* Footer */}
-       <footer class=" text-white bg-tw-dark border-t border-gray-800 py-16">
-             <div class="container mx-auto px-6">
-                 <div class="grid md:grid-cols-4 gap-8">
+       <footer className=" text-white bg-tw-dark border-t border-gray-800 py-16">
+             <div className="container mx-auto px-6">
+                 <div className="grid md:grid-cols-4 gap-8">
                      <div>
                          <div className="flex items-center space-x-3 mb-4">
                      <div className="w-10 h-10 bg-gradient-to-r from-tw-primary via-tw-accent to-tw-pink rounded-lg flex items-center justify-center">
@@ -437,8 +437,8 @@ export default function Index() {
                    </div>
                                    </div>
                    <div>
-                         <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
-                         <ul class="space-y-2">
+                         <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
+                         <ul className="space-y-2">
                              <li><Link to="/" className="text-gray-400 hover:text-white">Home</Link></li>
                              <li><Link to="/about" className="text-gray-400 hover:text-white">About</Link></li>
                              <li><Link to="/pricing" className="text-gray-400 hover:text-white">Pricing</Link></li>
@@ -448,8 +448,8 @@ export default function Index() {
                          </ul>
                      </div>
                      <div>
-      <h4 class="text-lg font-semibold mb-4">Services</h4>
-                         <ul class="space-y-2">
+      <h4 className="text-lg font-semibold mb-4">Services</h4>
+                         <ul className="space-y-2">
                               <li><Link to="/services/tools" className="text-gray-400 hover:text-white">Tools</Link></li>
                              <li><Link to="/services/tutorials" className="text-gray-400 hover:text-white">Tutorials</Link></li>
                              <li><Link to="/services/prompts" className="text-gray-400 hover:text-white">Prompts</Link></li>
@@ -460,18 +460,18 @@ export default function Index() {
                          </ul>
                      </div>
                      <div>
-                         <h4 class="text-lg font-semibold mb-4">Connect With Us</h4>
-                           <div class="flex space-x-8">
-                              <a href="#" class="w-10 h-10 hover:text-white bg-gray-800 hover:bg-tw-primary rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-110 "><i class="fab fa-twitter text-xl"></i></a>
-                                  <a href="#" class="w-10 h-10 hover:text-white bg-gray-800 hover:bg-tw-primary rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-110 "><i class="fab fa-linkedin text-xl"></i></a>
-                                  <a href="#" class="w-10 h-10 hover:text-white bg-gray-800 hover:bg-tw-primary rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-110 "><i class="fab fa-github text-xl"></i></a>
-                                  <a href="#" class="w-10 h-10 hover:text-white bg-gray-800 hover:bg-tw-primary rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-110 "><i class="fab fa-instagram text-xl"></i></a>
+                         <h4 className="text-lg font-semibold mb-4">Connect With Us</h4>
+                           <div className="flex space-x-8">
+                              <a href="#" className="w-10 h-10 hover:text-white bg-gray-800 hover:bg-tw-primary rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-110 "><i className="fab fa-twitter text-xl"></i></a>
+                                  <a href="#" className="w-10 h-10 hover:text-white bg-gray-800 hover:bg-tw-primary rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-110 "><i className="fab fa-linkedin text-xl"></i></a>
+                                  <a href="#" className="w-10 h-10 hover:text-white bg-gray-800 hover:bg-tw-primary rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-110 "><i className="fab fa-github text-xl"></i></a>
+                                  <a href="#" className="w-10 h-10 hover:text-white bg-gray-800 hover:bg-tw-primary rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-110 "><i className="fab fa-instagram text-xl"></i></a>
                            
                          </div>
-                         <p class="text-gray-400 mt-4">Email:  contact@toolworld.in</p>
-                         <p class="text-gray-400">+91  XXXXXXXXXX</p>
+                         <p className="text-gray-400 mt-4">Email:  contact@toolworld.in</p>
+                         <p className="text-gray-400">+91  XXXXXXXXXX</p>
                      </div> </div>
-                 <div class="border-t border-gray-800 mt-10 pt-6 text-center text-gray-400">
+                 <div className="border-t border-gray-800 mt-10 pt-6 text-center text-gray-400">
                      <p>© 2025  Toolworld.ai, All rights reserved.</p>
                  </div>
              </div>
