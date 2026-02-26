@@ -1,110 +1,127 @@
-import { useState } from "react";
-import { MessageCircle, X, Send, Zap, Loader2 } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { MessageCircle, X, Send, Zap, Loader2, Sparkles, Trash2 } from "lucide-react";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const genAI = new GoogleGenerativeAI(API_KEY);
 
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      type: "bot",
-      content:
-        "Hi! I'm your AI assistant powered by Gemini. I can help you find tools, answer questions about AI, and provide recommendations. How can I assist you today?",
-      timestamp: new Date(),
-    },
-  ]);
+  const initialMessage = {
+    id: 1,
+    type: "bot",
+    content:
+      "Hi! I'm your Toolworld AI assistant. I can help you find tools, answer questions about our platform, and guide you through our features. How can I assist you today?",
+    timestamp: new Date(),
+  };
+  const [messages, setMessages] = useState([initialMessage]);
   const [inputMessage, setInputMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef(null);
 
-  // Mock user - in real app this would come from auth state
-  const isProUser  = true; // Change to false to test non-Pro experience
+  const quickOptions = [
+    "What is Toolworld.ai?",
+    "Show me Pricing",
+    "Who is the Founder?",
+    "Available AI Tools",
+    "How to use tools?",
+  ];
 
-  const sendMessage = async () => {
-    if (!inputMessage.trim() || isTyping) return;
+  const clearChat = () => {
+    if (window.confirm("Are you sure you want to clear the chat history?")) {
+      setMessages([initialMessage]);
+    }
+  };
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isTyping]);
+
+  const systemPrompt = `You are the official AI assistant for Toolworld.ai. Your name is Toolworld AI.
+You ONLY answer questions related to Toolworld.ai, its features, pricing, the founder, and the AI tools listed on the platform.
+Toolworld.ai info:
+- Purpose: A platform for discovering, learning, and mastering AI tools.
+- Founder: Vinit Kumar Soni (Web Developer from Jaipur, pursuing BCA in Cyber Security).
+- Key Features: 100+ AI tools directory, 50+ tutorials, Community library, Real-time data.
+- Pricing: Free (₹0) and Pro (₹99/month). Pro includes Gemini bot, real-time data, and API access.
+- Contact: contact@toolworld.in.
+If a user asks about anything unrelated (e.g., world news, general coding not related to our tools, personal questions, or any topic outside of Toolworld.ai), politely decline. Say: "I'm specialized in Toolworld.ai related queries. I can't help with that, but I can tell you all about our platform and AI tools!"
+Keep responses concise, professional, and helpful. Use markdown for better formatting if needed.`;
+
+  const sendMessage = async (overrideMessage = null) => {
+    const textToSend = overrideMessage || inputMessage;
+    if (!textToSend.trim() || isTyping) return;
 
     const userMessage = {
       id: messages.length + 1,
       type: "user",
-      content: inputMessage,
+      content: textToSend,
       timestamp: new Date(),
     };
 
-    // Add user message immediately
     setMessages((prev) => [...prev, userMessage]);
-    const currentInput = inputMessage;
-    setInputMessage("");
+    if (!overrideMessage) setInputMessage("");
     setIsTyping(true);
 
     try {
-      // Call backend API endpoint
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: currentInput,
-        }),
+      const model = genAI.getGenerativeModel({ 
+        model: "gemini-2.5-flash", 
+        systemInstruction: systemPrompt
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      // Robustly format history: Must start with 'user' role
+      const history = [];
+      let foundFirstUser = false;
+      
+      for (const msg of messages) {
+        if (msg.type === "user") foundFirstUser = true;
+        
+        if (foundFirstUser) {
+          history.push({
+            role: msg.type === "user" ? "user" : "model",
+            parts: [{ text: msg.content }],
+          });
+        }
       }
 
-      const data = await response.json();
+      const chat = model.startChat({
+        history: history,
+      });
 
-      // Add bot response
+      const result = await chat.sendMessage(textToSend);
+      const response = await result.response;
+      const botText = response.text();
+
       const botResponse = {
-        id: messages.length + 2,
+        id: Date.now(),
         type: "bot",
-        content: data.response,
+        content: botText,
         timestamp: new Date(),
-        isRealTime: !data.fallback,
+        isRealTime: true,
       };
 
       setMessages((prev) => [...prev, botResponse]);
     } catch (error) {
-      console.error("Error sending message:", error);
-
-      // Fallback response for network errors
+      console.error("Gemini Error:", error);
       const errorResponse = {
-        id: messages.length + 2,
+        id: Date.now(),
         type: "bot",
-        content:
-          "I'm experiencing some technical difficulties right now, but I'm still here to help! As your AI assistant for Toolworld.ai, I can help you discover AI tools, provide recommendations, and answer questions about artificial intelligence. Please try your question again, or let me know how else I can assist you!",
+        content: "I'm having trouble connecting right now. Please check your connection and try again! I'm here to help with any Toolworld.ai questions.",
         timestamp: new Date(),
         isRealTime: false,
       };
-
       setMessages((prev) => [...prev, errorResponse]);
     } finally {
       setIsTyping(false);
     }
   };
 
-  if (!isProUser ) {
-    return (
-      <div className="fixed bottom-4 right-4 z-50">
-        <div className="bg-tw-gray/95 backdrop-blur-xl border border-gray-700 rounded-xl p-4 shadow-2xl max-w-xs">
-          <div className="text-center">
-            <Zap className="w-8 h-8 text-tw-primary mx-auto mb-2" />
-            <h3 className="text-white font-semibold mb-2">
-              Upgrade to Pro for AI Chat
-            </h3>
-            <p className="text-gray-300 text-sm mb-3">
-              Get instant AI assistance with our Gemini-powered chatbot
-            </p>
-            <button className="w-full bg-gradient-to-r from-tw-primary to-tw-accent text-white py-2 px-4 rounded-lg hover:shadow-lg transition-all duration-200 text-sm">
-              Upgrade Now
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="fixed bottom-4 right-4 z-50">
-      {/* Chat Button */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
@@ -114,118 +131,111 @@ const Chatbot = () => {
         </button>
       )}
 
-      {/* Chat Window */}
       {isOpen && (
-        <div className="bg-tw-dark/95 backdrop-blur-xl border border-gray-700 rounded-2xl shadow-2xl w-96 h-[500px] flex flex-col">
+        <div className="bg-tw-dark/95 backdrop-blur-xl border border-gray-700 rounded-2xl shadow-2xl w-96 max-w-[calc(100vw-32px)] h-[600px] flex flex-col overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-r from-tw-primary to-tw-accent p-4 rounded-t-2xl flex items-center justify-between">
+          <div className="bg-gradient-to-r from-tw-primary to-tw-accent p-4 flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                <Zap className="w-5 h-5 text-white" />
+                <Sparkles className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h3 className="text-white font-semibold">AI Assistant</h3>
-                <p className="text-white/80 text-xs">Powered by Gemini</p>
+                <h3 className="text-white font-semibold">Toolworld AI</h3>
+                <p className="text-white/80 text-xs">Gemini 2.5 Flash • Real-time</p>
               </div>
             </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="text-white/80 hover:text-white transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={clearChat}
+                className="text-white/80 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/10"
+                title="Clear Chat"
+              >
+                <Trash2 className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="text-white/80 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/10"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth">
             {messages.map((message) => (
               <div
                 key={message.id}
                 className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`max-w-[80%] p-3 rounded-lg ${
+                  className={`max-w-[85%] p-3 rounded-2xl ${
                     message.type === "user"
-                      ? "bg-gradient-to-r from-tw-primary to-tw-accent text-white"
-                      : "bg-tw-gray border border-gray-600 text-gray-200"
+                      ? "bg-gradient-to-r from-tw-primary to-tw-accent text-white rounded-tr-none shadow-md"
+                      : "bg-tw-gray border border-gray-700 text-gray-200 rounded-tl-none shadow-sm"
                   }`}
                 >
-                  <p className="text-sm">{message.content}</p>
-                  <div className="flex justify-between items-center mt-1">
-                    <p
-                      className={`text-xs ${
-                        message.type === "user"
-                          ? "text-white/70"
-                          : "text-gray-400"
-                      }`}
-                    >
-                      {message.timestamp.toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                  <div className="flex justify-between items-center mt-2 gap-2">
+                    <p className={`text-[10px] ${message.type === "user" ? "text-white/60" : "text-gray-500"}`}>
+                      {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                     </p>
                     {message.type === "bot" && message.isRealTime && (
-                      <span className="text-xs text-green-400 flex items-center gap-1">
-                        <Zap className="w-3 h-3" />
-                        Real-time
+                      <span className="text-[10px] text-tw-accent flex items-center gap-1 font-medium">
+                        <Zap className="w-2.5 h-2.5" />
+                        Live
                       </span>
                     )}
                   </div>
                 </div>
               </div>
             ))}
-
-            {/* Typing Indicator */}
             {isTyping && (
               <div className="flex justify-start">
-                <div className="bg-tw-gray border border-gray-600 text-gray-200 p-3 rounded-lg max-w-[80%]">
+                <div className="bg-tw-gray border border-gray-700 text-gray-200 p-3 rounded-2xl rounded-tl-none max-w-[85%]">
                   <div className="flex items-center gap-2">
                     <Loader2 className="w-4 h-4 animate-spin text-tw-primary" />
-                    <span className="text-sm text-gray-400">
-                      AI is thinking...
-                    </span>
+                    <span className="text-xs text-gray-400 font-medium">Assistant is thinking...</span>
                   </div>
                 </div>
               </div>
             )}
+            <div ref={messagesEndRef} />
           </div>
 
-          {/* Input */}
-          <div className="p-4 border-t border-gray-700">
+          {/* Footer with Quick Options and Input */}
+          <div className="p-4 border-t border-gray-800 bg-tw-dark/50 flex-shrink-0">
+            {!isTyping && messages.length < 5 && (
+              <div className="flex flex-wrap gap-2 mb-4">
+                {quickOptions.map((option) => (
+                  <button
+                    key={option}
+                    onClick={() => sendMessage(option)}
+                    className="text-[11px] bg-tw-gray hover:bg-gray-700 border border-gray-700 text-gray-300 px-3 py-1.5 rounded-full transition-all hover:border-tw-primary/50"
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            )}
             <div className="flex gap-2">
               <input
                 type="text"
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
-                onKeyPress={(e) =>
-                  e.key === "Enter" && !isTyping && sendMessage()
-                }
-                placeholder={
-                  isTyping
-                    ? "AI is responding..."
-                    : "Ask me anything about AI tools..."
-                }
+                onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+                placeholder="Ask about Toolworld.ai..."
                 disabled={isTyping}
-                className="flex-1 bg-tw-gray border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-tw-primary transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 bg-tw-gray border border-gray-700 rounded-xl px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-tw-primary transition-all text-sm disabled:opacity-50"
               />
               <button
-                onClick={sendMessage}
+                onClick={() => sendMessage()}
                 disabled={isTyping || !inputMessage.trim()}
-                className="bg-gradient-to-r from-tw-primary to-tw-accent text-white p-2 rounded-lg hover:shadow-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="bg-gradient-to-r from-tw-primary to-tw-accent text-white p-2.5 rounded-xl hover:shadow-lg transition-all transform hover:scale-105 disabled:opacity-50 disabled:scale-100 flex items-center justify-center"
               >
-                {isTyping ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Send className="w-4 h-4" />
-                )}
+                <Send className="w-4 h-4" />
               </button>
             </div>
-            {isTyping && (
-              <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
-                <Zap className="w-3 h-3 text-tw-primary" />
-                <span>Getting real-time response from Gemini AI...</span>
-              </div>
-            )}
           </div>
         </div>
       )}
